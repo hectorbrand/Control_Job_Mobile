@@ -2,4 +2,5 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-</resources>
+
+    <color name="header_gris">#343A40</color>    <color name="fondo_gris_claro">#F4F7F6</color> <color name="azul_primario">#007BFF</color>   <color name="azul_historial">#17A2B8</color>  <color name="rojo_eliminar">#DC3545</color>   <color name="verde_guardar">#28A745</color>   <color name="amarillo_entregar">#FFC107</color> </resources>

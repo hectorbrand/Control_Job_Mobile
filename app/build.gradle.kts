@@ -4,16 +4,12 @@ plugins {
 
 android {
     namespace = "com.controljob.inventario"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35 // Ajustado para compatibilidad estándar de desarrollo
 
     defaultConfig {
         applicationId = "com.controljob.inventario"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -36,11 +32,20 @@ android {
 }
 
 dependencies {
-    implementation(libs.activity.ktx)
     implementation(libs.appcompat)
-    implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation(libs.constraintlayout)
+
+    // --- LIBRERÍAS PARA LA CONEXIÓN (YA FUNCIONANDO) ---
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // --- LIBRERÍAS PARA DISEÑO (NUEVAS: TARJETAS Y LISTAS) ---
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    // --------------------------------------------------------
+
     testImplementation(libs.junit)
-    androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }
