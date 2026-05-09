@@ -1,6 +1,6 @@
 package com.controljob.inventario;
 
-import android.content.Intent; // Importación necesaria para abrir ventanas
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.controljob.inventario.inventario_modulo.ProductoAdapter;
 import com.controljob.inventario.inventario_modulo.ApiService;
 import com.controljob.inventario.inventario_modulo.RetrofitClient;
-import com.controljob.inventario.entregas.HistorialActivity; // Importación de tu nueva ventana
+import com.controljob.inventario.entregas.HistorialActivity;
+import com.controljob.inventario.auth.LoginActivity; // Importamos el Login
 import com.controljob.inventario.model.Producto;
 import java.util.List;
 import retrofit2.Call;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Variables para el formulario y botones
     private EditText etNombre, etCantidad, etPrecio;
-    private Button btnGuardar, btnVerHistorial; // Agregamos btnVerHistorial
+    private Button btnGuardar, btnVerHistorial, btnCerrarSesion; // Agregamos btnCerrarSesion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +38,23 @@ public class MainActivity extends AppCompatActivity {
         etCantidad = findViewById(R.id.etCantidad);
         etPrecio = findViewById(R.id.etPrecio);
         btnGuardar = findViewById(R.id.btnGuardar);
-        btnVerHistorial = findViewById(R.id.btnVerHistorial); // Conectamos el botón de la cabecera
+        btnVerHistorial = findViewById(R.id.btnVerHistorial);
+        btnCerrarSesion = findViewById(R.id.btnCerrarSesion); // Conectamos el botón de cerrar sesión
 
         // 2. Conectar la lista
         recyclerView = findViewById(R.id.recyclerViewProductos);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // --- LÓGICA PARA CERRAR SESIÓN ---
+        btnCerrarSesion.setOnClickListener(v -> {
+            // Regresamos al LoginActivity
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            // Limpiamos el historial para que no pueda volver atrás con el botón físico del cel
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish(); // Cerramos MainActivity
+            Toast.makeText(MainActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+        });
 
         // --- LÓGICA PARA ABRIR EL HISTORIAL ---
         btnVerHistorial.setOnClickListener(v -> {
