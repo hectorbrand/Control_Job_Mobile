@@ -1,5 +1,6 @@
 package com.controljob.inventario;
 
+import android.content.Intent; // Importación necesaria para abrir ventanas
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.controljob.inventario.inventario_modulo.ProductoAdapter;
 import com.controljob.inventario.inventario_modulo.ApiService;
 import com.controljob.inventario.inventario_modulo.RetrofitClient;
+import com.controljob.inventario.entregas.HistorialActivity; // Importación de tu nueva ventana
 import com.controljob.inventario.model.Producto;
 import java.util.List;
 import retrofit2.Call;
@@ -23,22 +25,29 @@ public class MainActivity extends AppCompatActivity {
 
     // Variables para el formulario y botones
     private EditText etNombre, etCantidad, etPrecio;
-    private Button btnGuardar;
+    private Button btnGuardar, btnVerHistorial; // Agregamos btnVerHistorial
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 1. Conectar los elementos del formulario (ID's del XML)
+        // 1. Conectar los elementos del formulario y cabecera
         etNombre = findViewById(R.id.etNombre);
         etCantidad = findViewById(R.id.etCantidad);
         etPrecio = findViewById(R.id.etPrecio);
         btnGuardar = findViewById(R.id.btnGuardar);
+        btnVerHistorial = findViewById(R.id.btnVerHistorial); // Conectamos el botón de la cabecera
 
         // 2. Conectar la lista
         recyclerView = findViewById(R.id.recyclerViewProductos);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // --- LÓGICA PARA ABRIR EL HISTORIAL ---
+        btnVerHistorial.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, HistorialActivity.class);
+            startActivity(intent);
+        });
 
         // 3. Lógica para guardar el producto de forma real
         btnGuardar.setOnClickListener(v -> {

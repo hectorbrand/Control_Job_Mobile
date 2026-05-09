@@ -1,16 +1,28 @@
 package com.controljob.inventario.model;
 
-public class Entrega {
-    private String nombre_producto;
-    private int cantidadARestar; // Nombre exacto que pide tu server.js
-    private String persona_recibe;
-    private String area; // Nombre exacto que pide tu server.js
+import com.google.gson.annotations.SerializedName;
 
-    public Entrega(String nombre_producto, int cantidadARestar, String persona_recibe, String area) {
+public class Entrega {
+
+    @SerializedName("nombre_producto")
+    private String nombre_producto;
+
+    @SerializedName("cantidad")
+    private int cantidadARestar;
+
+    private String persona_recibe;
+    private String area;
+
+    // AGREGAMOS ESTE CAMPO PARA LA FECHA
+    @SerializedName("fecha_entrega")
+    private String fecha;
+
+    public Entrega(String nombre_producto, int cantidadARestar, String persona_recibe, String area, String fecha) {
         this.nombre_producto = nombre_producto;
         this.cantidadARestar = cantidadARestar;
         this.persona_recibe = persona_recibe;
         this.area = area;
+        this.fecha = fecha;
     }
 
     // Getters y Setters
@@ -25,4 +37,8 @@ public class Entrega {
 
     public String getArea() { return area; }
     public void setArea(String area) { this.area = area; }
+
+    // Getter y Setter para la fecha
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
 }

@@ -95,16 +95,16 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
 
                             if (cantidadAEntregar <= producto.getCantidad()) {
 
-                                // Usamos los nuevos nombres de variables de Entrega.java
+                                // CORRECCIÓN: Ahora pasamos 5 parámetros (el último es la fecha como "" vacío)
                                 Entrega nuevaEntrega = new Entrega(
                                         producto.getNombre(),
                                         cantidadAEntregar,
                                         persona,
-                                        area
+                                        area,
+                                        "" // Fecha vacía: el servidor la asignará
                                 );
 
                                 ApiService apiService = RetrofitClient.getApiService();
-                                // Pasamos el ID y el objeto de entrega
                                 apiService.registrarEntrega(producto.getId(), nuevaEntrega).enqueue(new Callback<Void>() {
                                     @Override
                                     public void onResponse(Call<Void> call, Response<Void> response) {

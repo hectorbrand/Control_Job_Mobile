@@ -26,4 +26,6 @@ public interface ApiService {
     // RUTA PARA REGISTRAR LA ENTREGA (Sincronizada con tu server.js)
     @PUT("entregar/{id}")
     Call<Void> registrarEntrega(@Path("id") int id, @Body Entrega entrega);
+    @GET("historial")
+    Call<List<Entrega>> getHistorial();
 }
