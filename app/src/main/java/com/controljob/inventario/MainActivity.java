@@ -7,7 +7,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.controljob.inventario.adapter.ProductoAdapter;
+import com.controljob.inventario.inventario_modulo.ProductoAdapter;
 import com.controljob.inventario.inventario_modulo.ApiService;
 import com.controljob.inventario.inventario_modulo.RetrofitClient;
 import com.controljob.inventario.model.Producto;
