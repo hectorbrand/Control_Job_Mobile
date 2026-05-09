@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.controljob.inventario.R;
+import com.controljob.inventario.model.Entrega;
 import com.controljob.inventario.model.Producto;
 import java.util.List;
 import retrofit2.Call;
@@ -39,12 +41,9 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
         holder.tvNombre.setText(producto.getNombre());
         holder.tvStock.setText(String.valueOf(producto.getCantidad()));
 
-        // --- BOTÓN ELIMINAR CORREGIDO ---
+        // --- BOTÓN ELIMINAR ---
         holder.btnEliminar.setOnClickListener(v -> {
-            // Esta es la forma correcta de obtener la posición actual
             int currentPosition = holder.getAdapterPosition();
-
-            // Verificamos que la posición sea válida
             if (currentPosition != RecyclerView.NO_POSITION) {
                 Producto productoAEliminar = listaProductos.get(currentPosition);
 
@@ -52,21 +51,17 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
                         .setTitle("Eliminar")
                         .setMessage("¿Deseas eliminar " + productoAEliminar.getNombre() + "?")
                         .setPositiveButton("Sí", (dialog, which) -> {
-
                             ApiService apiService = RetrofitClient.getApiService();
                             apiService.eliminarProducto(productoAEliminar.getId()).enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     if (response.isSuccessful()) {
                                         Toast.makeText(v.getContext(), "Producto eliminado", Toast.LENGTH_SHORT).show();
-
-                                        // Borramos usando la posición actualizada
                                         listaProductos.remove(currentPosition);
                                         notifyItemRemoved(currentPosition);
                                         notifyItemRangeChanged(currentPosition, listaProductos.size());
                                     }
                                 }
-
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
                                     Toast.makeText(v.getContext(), "Error de conexión", Toast.LENGTH_SHORT).show();
@@ -78,9 +73,65 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
             }
         });
 
-        // Botón Entregar (opcional por ahora)
+        // --- BOTÓN ENTREGAR (AMARILLO) ---
         holder.btnEntregar.setOnClickListener(v -> {
-            Toast.makeText(v.getContext(), "Entregando: " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+            View dialogView = LayoutInflater.from(v.getContext()).inflate(R.layout.dialogo_entrega, null);
+            EditText etCant = dialogView.findViewById(R.id.etCantidadEntrega);
+            EditText etPers = dialogView.findViewById(R.id.etPersonaRecibe);
+            EditText etArea = dialogView.findViewById(R.id.etAreaDestino);
+            TextView tvTitu = dialogView.findViewById(R.id.tvTituloDialogo);
+
+            tvTitu.setText("Entregar: " + producto.getNombre() + " (Disponible: " + producto.getCantidad() + ")");
+
+            new AlertDialog.Builder(v.getContext())
+                    .setView(dialogView)
+                    .setPositiveButton("Confirmar Entrega", (dialog, which) -> {
+                        String cantStr = etCant.getText().toString().trim();
+                        String persona = etPers.getText().toString().trim();
+                        String area = etArea.getText().toString().trim();
+
+                        if (!cantStr.isEmpty() && !persona.isEmpty() && !area.isEmpty()) {
+                            int cantidadAEntregar = Integer.parseInt(cantStr);
+
+                            if (cantidadAEntregar <= producto.getCantidad()) {
+
+                                // Usamos los nuevos nombres de variables de Entrega.java
+                                Entrega nuevaEntrega = new Entrega(
+                                        producto.getNombre(),
+                                        cantidadAEntregar,
+                                        persona,
+                                        area
+                                );
+
+                                ApiService apiService = RetrofitClient.getApiService();
+                                // Pasamos el ID y el objeto de entrega
+                                apiService.registrarEntrega(producto.getId(), nuevaEntrega).enqueue(new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(Call<Void> call, Response<Void> response) {
+                                        if (response.isSuccessful()) {
+                                            Toast.makeText(v.getContext(), "✅ Entrega registrada: " + cantidadAEntregar + " a " + persona, Toast.LENGTH_LONG).show();
+
+                                            producto.setCantidad(producto.getCantidad() - cantidadAEntregar);
+                                            notifyItemChanged(holder.getAdapterPosition());
+                                        } else {
+                                            Toast.makeText(v.getContext(), "Error en el servidor: " + response.code(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Void> call, Throwable t) {
+                                        Toast.makeText(v.getContext(), "Error de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(v.getContext(), "⚠️ Stock insuficiente", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(v.getContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
         });
     }
 
